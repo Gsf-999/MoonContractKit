@@ -1,0 +1,7 @@
+import {
+  "Gsf-999/mooncontractkit" @contract,
+}
+
+options(
+  "is-main": true,
+)
