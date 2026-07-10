@@ -1,0 +1,141 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Gsf-999/mooncontractkit"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn compare_contracts(DataContract, DataContract) -> CompatibilityReport
+
+pub fn evaluate_contract_gate(ContractGate, CompatibilityReport, ValidationReport) -> GateDecision
+
+pub fn strict_contract_gate() -> ContractGate
+
+pub fn user_created_v1() -> DataContract
+
+pub fn user_created_v2_additive() -> DataContract
+
+pub fn user_created_v2_breaking() -> DataContract
+
+pub fn validate_payload(DataContract, Array[ObservedField]) -> ValidationReport
+
+// Errors
+
+// Types and methods
+pub(all) enum ChangeKind {
+  Additive
+  Risky
+  Breaking
+} derive(Eq, @debug.Debug)
+pub fn ChangeKind::name(Self) -> String
+
+pub(all) struct CompatibilityReport {
+  old_name : String
+  new_name : String
+  issues : Array[ContractIssue]
+  breaking : Int
+  risky : Int
+  additive : Int
+} derive(Eq, @debug.Debug)
+pub fn CompatibilityReport::compatible(Self) -> Bool
+pub fn CompatibilityReport::has_risk(Self) -> Bool
+pub fn CompatibilityReport::new(String, String, Array[ContractIssue]) -> Self
+pub fn CompatibilityReport::to_json(Self) -> String
+
+pub(all) struct ContractField {
+  name : String
+  typ : FieldType
+  required : Bool
+  pii : Bool
+  description : String
+} derive(Eq, @debug.Debug)
+pub fn ContractField::new(String, FieldType, Bool, Bool, String) -> Self
+
+pub(all) struct ContractGate {
+  name : String
+  block_breaking : Bool
+  block_validation_errors : Bool
+  warn_on_risky : Bool
+} derive(Eq, @debug.Debug)
+pub fn ContractGate::new(String, Bool, Bool, Bool) -> Self
+
+pub(all) struct ContractIssue {
+  code : String
+  level : IssueLevel
+  kind : ChangeKind
+  field : String
+  message : String
+} derive(Eq, @debug.Debug)
+pub fn ContractIssue::new(String, IssueLevel, ChangeKind, String, String) -> Self
+pub fn ContractIssue::to_json(Self) -> String
+
+pub(all) struct DataContract {
+  name : String
+  version : String
+  fields : Array[ContractField]
+  allow_extra_fields : Bool
+} derive(Eq, @debug.Debug)
+pub fn DataContract::add_field(Self, ContractField) -> Unit
+pub fn DataContract::field_index(Self, String) -> Int
+pub fn DataContract::has_field(Self, String) -> Bool
+pub fn DataContract::new(String, String, Bool) -> Self
+
+pub(all) enum FieldType {
+  Text
+  Integer
+  Decimal
+  Boolean
+  Timestamp
+  Object
+  Array
+  Unknown
+} derive(Eq, @debug.Debug)
+pub fn FieldType::name(Self) -> String
+
+pub(all) struct GateDecision {
+  gate : String
+  allowed : Bool
+  level : IssueLevel
+  reason : String
+} derive(Eq, @debug.Debug)
+pub fn GateDecision::new(String, Bool, IssueLevel, String) -> Self
+pub fn GateDecision::to_json(Self) -> String
+
+pub(all) enum IssueLevel {
+  Info
+  Warning
+  Error
+} derive(Eq, @debug.Debug)
+pub fn IssueLevel::name(Self) -> String
+
+pub(all) struct ObservedField {
+  name : String
+  typ : FieldType
+  present : Bool
+} derive(Eq, @debug.Debug)
+pub fn ObservedField::new(String, FieldType, Bool) -> Self
+
+pub(all) struct ValidationIssue {
+  code : String
+  level : IssueLevel
+  field : String
+  message : String
+} derive(Eq, @debug.Debug)
+pub fn ValidationIssue::new(String, IssueLevel, String, String) -> Self
+pub fn ValidationIssue::to_json(Self) -> String
+
+pub(all) struct ValidationReport {
+  contract_name : String
+  issues : Array[ValidationIssue]
+  errors : Int
+  warnings : Int
+} derive(Eq, @debug.Debug)
+pub fn ValidationReport::new(String, Array[ValidationIssue]) -> Self
+pub fn ValidationReport::to_json(Self) -> String
+pub fn ValidationReport::valid(Self) -> Bool
+
+// Type aliases
+
+// Traits
+
