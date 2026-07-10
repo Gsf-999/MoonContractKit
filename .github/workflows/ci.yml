@@ -1,0 +1,62 @@
+name: MoonContractKit CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  moonbit:
+    name: moonbit-${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install MoonBit on Unix
+        if: ${{ matrix.os != 'windows-latest' }}
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> $GITHUB_PATH
+
+      - name: Install MoonBit on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        shell: pwsh
+        run: |
+          Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+          irm https://cli.moonbitlang.com/install/powershell.ps1 | iex
+          "C:\Users\runneradmin\.moon\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
+
+      - name: Post install
+        run: |
+          moon version --all
+          moon update
+
+      - name: Moon check
+        run: moon check --target all
+
+      - name: Moon test
+        run: moon test --target all
+
+      - name: Format check
+        run: |
+          moon fmt
+          git diff --exit-code
+
+      - name: API metadata check
+        run: |
+          moon info
+          git diff --exit-code
+
+      - name: Run CLI demo
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: moon run cmd/main
